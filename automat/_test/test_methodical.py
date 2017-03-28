@@ -186,6 +186,30 @@ class MethodicalTests(TestCase):
         self.assertIn("declaredInputName", str(cm.exception))
 
 
+    def test_str(self):
+        """
+        States, Inputs, and Outputs have a simple str().
+        """
+        class Mech(object):
+            m = MethodicalMachine()
+            @m.state(initial=True)
+            def stateName(self):
+                "state"
+            @m.input()
+            def inputName(self):
+                "input"
+            @m.output()
+            def outputName(self):
+                "output"
+        m = Mech()
+        self.assertEqual(str(m.stateName), "State(stateName)")
+        # TODO: m.inputName is actually a function, which wraps the
+        # MethodicalInput that has the __str__ which we want to test, so this
+        # fails
+        self.assertEqual(str(m.inputName), "Input(inputName)")
+        self.assertEqual(str(m.outputName), "Output(outputName)")
+
+
     def test_inputWithArguments(self):
         """
         If an input takes an argument, it will pass that along to its output.
@@ -273,8 +297,10 @@ class MethodicalTests(TestCase):
             def event(self):
                 "An event."
             start.upon(event, enter=end, outputs=[])
-            with self.assertRaises(ValueError):
+            with self.assertRaises(ValueError) as cm:
                 start.upon(event, enter=end, outputs=[])
+            self.assertEqual(str(cm.exception),
+                             "already have transition from State(start) via Input(event)")
 
     def test_badTransitionForCurrentState(self):
         """

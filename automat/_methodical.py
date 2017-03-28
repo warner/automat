@@ -40,6 +40,9 @@ class MethodicalState(object):
     method = attr.ib()
     serialized = attr.ib(repr=False)
 
+    def __str__(self):
+        return "State({})".format(self.method.__name__)
+
     def upon(self, input, enter, outputs, collector=list):
         """
         Declare a state transition within the L{MethodicalMachine} associated
@@ -86,6 +89,8 @@ class MethodicalInput(object):
     symbol = attr.ib(repr=False)
     collectors = attr.ib(default=attr.Factory(dict), repr=False)
 
+    def __str__(self):
+        return "Input({})".format(self.method.__name__)
 
     def __get__(self, oself, type=None):
         """
@@ -114,6 +119,9 @@ class MethodicalOutput(object):
     """
     machine = attr.ib(repr=False)
     method = attr.ib()
+
+    def __str__(self):
+        return "Output({})".format(self.method.__name__)
 
     def __get__(self, oself, type=None):
         """
